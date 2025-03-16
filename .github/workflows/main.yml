@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - main
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          # cache: yarn
+
+      - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: zuOjSN9Kz208Mvf6jC78p-ly4fhNjS971GhsuyUm
+
+      - name: 📦 Install dependencies
+        run: yarn install
+
+      - name: 📦 Init EAS
+        run: eas init --id b8230080-0e93-4715-b7bf-184a3c79b363
+
+      - name: 🚀 Create preview
+        uses: expo/expo-github-action/preview@v8
+        with:
+          # `github.event.pull_request.head.ref` is only available on `pull_request` triggers.
+          # Use your own, or keep the automatically inferred branch name from `--auto`, when using different triggers.
+          command: eas update --channel preview --message "${{ steps.date.outputs.date }}"
